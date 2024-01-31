@@ -22,7 +22,7 @@ public class KakaoPay {
 	private KakaoPayReadyVO kakaoPayReadyVO;
 	private KakaoPayApprovalVO kakaoPayApprovalVO;
 
-	public String kakaoPayReady() {
+	public String kakaoPayReady(String item, String price) {
 
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -37,9 +37,9 @@ public class KakaoPay {
 		params.add("cid", "TC0ONETIME");
 		params.add("partner_order_id", "1002");
 		params.add("partner_user_id", "Test");
-		params.add("item_name", "Test입니다.");
+		params.add("item_name", item);
 		params.add("quantity", "1");
-		params.add("total_amount", "101");
+		params.add("total_amount", price);
 		params.add("tax_free_amount", "0");
 		params.add("approval_url", "http://localhost:8111/kakaoPaySuccess");
 		params.add("cancel_url", "http://localhost:8111/kakaoPayCancel");
@@ -49,7 +49,8 @@ public class KakaoPay {
 
 		try {
 			kakaoPayReadyVO = restTemplate.postForObject(new URI(HOST + "/v1/payment/ready"), body, KakaoPayReadyVO.class);
-
+			kakaoPayReadyVO.setItem_name(item);
+			kakaoPayReadyVO.setPrice(Integer.parseInt(price));
 			log.info("" + kakaoPayReadyVO);
 
 			return kakaoPayReadyVO.getNext_redirect_pc_url();
@@ -70,6 +71,7 @@ public class KakaoPay {
 
 		log.info("....................KakaoPayInfoVO........................");
 		log.info("-----------------------------");
+		log.info(kakaoPayReadyVO.toString());
 
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -86,7 +88,7 @@ public class KakaoPay {
 		params.add("partner_order_id", "1002");
 		params.add("partner_user_id", "Test");
 		params.add("pg_token", pg_token);
-		params.add("total_amount", "101");
+		params.add("total_amount", String.valueOf(kakaoPayReadyVO.getPrice()));
 
 		HttpEntity<MultiValueMap<String, String>> body = new HttpEntity<MultiValueMap<String, String>>(params, headers);
 

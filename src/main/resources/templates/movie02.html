@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" ></script>
+</head>
+<body>
+제목 : <input type="text" name="" id="data" value="해리포터">
+페이지 : <input type="text" name="" id="page" oninput="num()">
+<button type="button" onclick="api()">search</button>
+total : <span id="cnt"></span>
+<div class="container">
+
+</div>
+<script>
+    let num = () => {
+        let page = document.getElementById("page");
+        page.value = page.value.replace(/[^0-9]/g, "");
+    }
+
+    let api = () => {
+        let movie = document.getElementById("data").value;
+        let page = document.getElementById("page").value;
+        if (Number(page) < 1 || page === '') {
+            page = 1;
+        }
+
+        let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?ServiceKey=E3EUFE1791CP9TBHQ6X6&detail=Y&query='+movie+'&collection=kmdb_new2'
+
+        let data = {
+            ServiceKey: 'E3EUFE1791CP9TBHQ6X6',
+            detail: 'Y',
+            query: movie,
+            collection: 'kmdb_new2'
+        }
+
+        $.ajax({
+            type: "get",
+            url: url,
+            data: data,
+            success: function (res) {
+                console.log(JSON.parse(res))
+            }
+        });
+    }
+</script>
+</body>
+</html>

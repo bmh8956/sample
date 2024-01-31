@@ -1,0 +1,121 @@
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" ></script>
+</head>
+<body>
+제목 : <input type="text" name="" id="data" value="해리포터">
+페이지 : <input type="text" name="" id="page" oninput="num()">
+<button type="button" onclick="api()">search</button>
+total : <span id="cnt"></span>
+<div class="container">
+
+</div>
+<script>
+    let num = () => {
+        let page = document.getElementById("page");
+        page.value = page.value.replace(/[^0-9]/g, "");
+    }
+    let api = () => {
+        let movie = document.getElementById("data").value;
+        let page = document.getElementById("page").value;
+        if (Number(page) < 1 || page === '') {
+            page = 1;
+        }
+
+        // $.ajax({
+        //     type: "get",
+        //     url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json?key=403dddce8295bd4a4cd9f69a6c26946d&curPage=" + page + "&movieNm=" + movie,
+        //     success: function (res) {
+        //         console.log(res)
+        //         console.log(res.movieListResult.movieList)
+        //         let list = res.movieListResult.movieList;
+        //         if (list.length > 0) {
+        //             document.querySelector('.container').innerHTML = '';
+        //         } else {
+        //             document.querySelector('.container').innerHTML = '검색결과 없음';
+        //         }
+        //         let table = document.createElement('table');
+        //         table.classList.add('table')
+        //         let tr1 = document.createElement('tr');
+        //         table.append(tr1);
+        //         let index = 0;
+        //         for (let li of list) {
+        //             let tr2 = document.createElement('tr');
+        //             for (let l of Object.keys(li)) {
+        //                 if (index == 0) {
+        //                     let th = document.createElement('th');
+        //                     th.textContent = l;
+        //                     tr1.append(th)
+        //                 }
+        //                 let td = document.createElement('td');
+        //                 if (typeof li[l] == 'object') {
+        //                     li[l] = JSON.stringify(li[l])
+        //                 }
+        //                 td.textContent = li[l];
+        //                 tr2.append(td);
+        //                 table.append(tr2);
+        //             }
+        //             index++;
+        //         }
+        //         document.querySelector(".container").append(table)
+        //     }
+        // });
+
+
+        let data = {
+            key: '403dddce8295bd4a4cd9f69a6c26946d',
+            curPage: page,
+            movieNm: movie
+        }
+
+        // let data = {
+        //     key: '403dddce8295bd4a4cd9f69a6c26946d',
+        //     targetDt: "20240128"
+        // }
+        let url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json";
+        // let url = "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json";
+
+        $.ajax({
+            type: "get",
+            url: url,
+            data: data,
+            success: function (res) {
+                console.log(res)
+                console.log(res.movieListResult.movieList)
+                let list = res.movieListResult.movieList;
+                if (list.length > 0) {
+                    document.querySelector('.container').innerHTML = '';
+                } else {
+                    document.querySelector('.container').innerHTML = '검색결과 없음';
+                }
+                let table = document.createElement('table');
+                table.classList.add('table')
+                let tr1 = document.createElement('tr');
+                table.append(tr1);
+                let index = 0;
+                for (let li of list) {
+                    let tr2 = document.createElement('tr');
+                    for (let l of Object.keys(li)) {
+                        if (index == 0) {
+                            let th = document.createElement('th');
+                            th.textContent = l;
+                            tr1.append(th)
+                        }
+                        let td = document.createElement('td');
+                        if (typeof li[l] == 'object') {
+                            li[l] = JSON.stringify(li[l])
+                        }
+                        td.textContent = li[l];
+                        tr2.append(td);
+                        table.append(tr2);
+                    }
+                    index++;
+                }
+                document.querySelector(".container").append(table)
+                document.getElementById("cnt").textContent = res.movieListResult.totCnt;
+            }
+        });
+    }
+</script>
+</body>
+</html>

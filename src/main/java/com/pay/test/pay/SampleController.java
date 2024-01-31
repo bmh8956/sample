@@ -4,11 +4,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -28,11 +28,17 @@ public class SampleController {
 	}
 
 	@PostMapping("/kakaoPay")
-	public String kakaoPay() {
+	@ResponseBody
+	public String kakaoPay(@RequestParam Map<String, Object> map) {
 		log.info(".....................kakaoPay post.......................");
+		log.info((String) map.get("item"));
+		log.info((String) map.get("price"));
+		String item = (String) map.get("item");
+		String price = (String) map.get("price");
+		String next_url = kakaopay.kakaoPayReady(item, price);
 
-		return "redirect:" + kakaopay.kakaoPayReady();
-
+//		return "redirect:" + kakaopay.kakaoPayReady();
+		return next_url;
 	}
 
 	@RequestMapping("/kakaoPaySuccess")

@@ -4,14 +4,58 @@
     <meta charset="UTF-8">
     <title>Insert title here</title>
 </head>
+<style>
+    /*.pay {*/
+    /*    background: url("/images/payment_icon_yellow_medium.png") no-repeat;*/
+    /*}*/
+    .layer {
+        width: 500px;
+        height: 500px;
+    }
+</style>
+<script
+        src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
 <body>
 
 <h1> kakaoPay api 이용하기 </h1>
 
-<form method="post" action="/kakaoPay">
-    <button>카카오페이로 결제하기</button>
-</form>
+<!--<form method="post" action="/kakaoPay">-->
+    상품명 : <input type="text" name="" id="item">
+    가격 : <input type="text" name="" id="price">
+    <button type="button" class="pay" id="pay"><img src="/images/payment_icon_yellow_medium.png" alt=""></button>
+<!--</form>-->
+<div class="result" id="result"></div>
+<script>
+    function getPayInfo(data) {
+        let info = JSON.parse(data)
+        console.log(info)
+    }
 
+    window.onload = () => {
+        let price = document.getElementById("price");
+        price.oninput = () => {
+            price.value = price.value.replace(/[^0-9]/g, '');
+        }
+        let pay = document.getElementById("pay")
+        pay.onclick = () => {
+            let data = {
+                item: document.getElementById("item").value,
+                price: document.getElementById("price").value
+            }
+            $.ajax({
+                    type: "post",
+                    url: "/kakaoPay",
+                    data: data,
+                    success: function (res) {
+                        console.log(res)
+                        window.open(res, '_blank', 'width=350,height=500')
+                    }
+                });
+        }
 
+    }
+</script>
 </body>
 </html>
