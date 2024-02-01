@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" ></script>
+</head>
+<body>
+<div id="list"></div>
+
+<script>
+    let get_info = () => {
+        $.ajax({
+                type: "post",
+                url: "get_info",
+                data: "",
+                success: function (res) {
+                    if(typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    console.log(res)
+
+                    for(let rs of res) {
+                        let div = document.createElement('div');
+                        let img  = document.createElement('img');
+                        img.src = rs.img;
+                        let p = document.createElement('p');
+                        p.textContent = rs.title
+                        div.append(img)
+                        div.append(p)
+                        document.getElementById('list').append(div);
+                    }
+                }
+            });
+    }
+
+    window.onload = () => {
+        get_info();
+    }
+</script>
+</body>
+</html>

@@ -3,17 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" ></script>
+    <!--    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous" ></script>-->
+    <!--    <script th:src="@{/js/jquery.min.js}"></script>-->
+    <!--    <script th:src="@{/js/jquery-migrate-3.0.0.js}"></script>-->
+    <!--    <script th:src="@{/js/jquery-ui.min.js}"></script>-->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script th:src="@{/js/datepicker.js}"></script>
 </head>
+<style>
+    td {
+        border: 1px solid black;
+    }
+</style>
 <body>
 제목 : <input type="text" name="" id="data" value="해리포터">
 페이지 : <input type="text" name="" id="page" oninput="num()">
+개봉일 : <input type="text" name="" id="datepicker1"> ~ <input type="text" name="" id="datepicker2">
 <button type="button" onclick="api()">search</button>
 total : <span id="cnt"></span>
 <div class="container">
 
 </div>
 <script>
+    $(function () {
+        $("#datepicker1").datepicker({
+            changeYear: true,
+            changeMonth: true,
+            yearRange: 'c-100:c+10',
+            maxDate: 0
+        });
+        $("#datepicker2").datepicker({
+            changeYear: true,
+            changeMonth: true,
+            yearRange: 'c-100:c+10',
+            maxDate: 0
+        });
+    })
     let num = () => {
         let page = document.getElementById("page");
         page.value = page.value.replace(/[^0-9]/g, "");
@@ -22,17 +49,22 @@ total : <span id="cnt"></span>
     let api = () => {
         let movie = document.getElementById("data").value;
         let page = document.getElementById("page").value;
+        let start = document.getElementById("datepicker1").value.replace(/-/g, '')
+        let end = document.getElementById("datepicker2").value.replace(/-/g, '')
+        let img_list = [];
         if (Number(page) < 1 || page === '') {
             page = 1;
         }
 
-        let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp?ServiceKey=E3EUFE1791CP9TBHQ6X6&detail=Y&query='+movie+'&collection=kmdb_new2'
+        let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp'
 
         let data = {
             ServiceKey: 'E3EUFE1791CP9TBHQ6X6',
             detail: 'Y',
-            query: movie,
-            collection: 'kmdb_new2'
+            title: movie,
+            collection: 'kmdb_new2',
+            releaseDts: start,
+            releaseDte: end
         }
 
         $.ajax({
@@ -41,6 +73,53 @@ total : <span id="cnt"></span>
             data: data,
             success: function (res) {
                 console.log(JSON.parse(res))
+                if (typeof res === 'string') {
+                    res = JSON.parse(res)
+                }
+                let list = res.Data[0].Result
+
+                if (list.length > 0) {
+                    document.querySelector('.container').innerHTML = '';
+                } else {
+                    document.querySelector('.container').innerHTML = '검색결과 없음';
+                }
+                let table = document.createElement('table');
+                table.classList.add('table')
+                let tr1 = document.createElement('tr');
+                table.append(tr1);
+                let index = 0;
+                for (let li of list) {
+                    let tr2 = document.createElement('tr');
+                    for (let l of Object.keys(li)) {
+                        if (index == 0) {
+                            let th = document.createElement('th');
+                            th.textContent = l;
+                            tr1.append(th)
+                        }
+                        let td = document.createElement('td');
+                        if (typeof li[l] == 'object') {
+                            li[l] = JSON.stringify(li[l])
+                        }
+                        td.textContent = li[l];
+                        tr2.append(td);
+                        table.append(tr2);
+                        if(l == 'stlls') {
+                            if(li[l] != '') {
+                                img_list = li[l].split("|");
+                            }
+                        }
+                    }
+                    index++;
+                }
+
+                // document.querySelector(".container").append(table)
+                document.getElementById("cnt").textContent = res.TotalCount;
+                console.log(img_list)
+                for(let img of img_list) {
+                    let tag = document.createElement("img")
+                    tag.src = img;
+                    document.querySelector(".container").append(tag);
+                }
             }
         });
     }
