@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class Crawling {
 
-	public static String crawling() throws InterruptedException {
+	public static String crawling_movie_list() throws InterruptedException {
 		WebDriverManager.edgedriver().setup();
 		String baseUrl = "https://www.lottecinema.co.kr/NLCHS/Movie/List?flag=1";
 
@@ -27,20 +27,18 @@ public class Crawling {
 
 //		Thread.sleep(1);
 		List<WebElement> elements = driver.findElements(By.cssSelector(".screen_add_box"));
-		List<String> imgl = new ArrayList<>();
-		List<String> titlel = new ArrayList<>();
-		List<Map> list = new ArrayList<>();
 		JsonArray ja = new JsonArray();
 
 		for(WebElement element : elements) {
 			JsonObject jo = new JsonObject();
 			String img = extractText(element, ".poster_info img", "src");
 			String title = extractText(element, ".tit_info", "text").replace(extractText(element, ".ic_grade", "text"), "");
-			imgl.add(img);
-			titlel.add(title);
-			jo.addProperty("title", title);
-			jo.addProperty("img", img);
-			ja.add(jo);
+			if(!(title.equals("") || img.equals(""))) {
+				jo.addProperty("title", title);
+				jo.addProperty("img", img);
+				ja.add(jo);
+//			    ReadImage.save(img);
+			}
 		}
 		driver.quit();
 		Gson gson = new Gson();
@@ -66,5 +64,10 @@ public class Crawling {
 				return "";
 			}
 		}
+	}
+
+	//  이미 등록되었다면 다운로드, insert x
+	public static void crw_insert(String url, String title) {
+
 	}
 }

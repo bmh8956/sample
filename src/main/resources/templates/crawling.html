@@ -10,7 +10,6 @@
 </head>
 <body>
 <div id="list"></div>
-
 <script>
     let get_info = () => {
         $.ajax({
@@ -31,10 +30,70 @@
                         p.textContent = rs.title
                         div.append(img)
                         div.append(p)
+                        div.dataset.id = rs.img.split("/").slice(-1)[0].split(".")[0].split('_')[0];
+                        div.dataset.title = rs.title;
+                        div.dataset.img = rs.img;
+                        div.classList.add("data");
                         document.getElementById('list').append(div);
                     }
+                    let btn = document.createElement('button');
+                    btn.onclick = update;
+                    btn.textContent = 'update'
+                    document.getElementById('list').prepend(document.createElement('hr'));
+                    document.getElementById('list').prepend(btn);
                 }
             });
+    }
+
+    let update = async () => {
+        let div = document.querySelectorAll("div.data");
+        let list = [];
+        for(let mv of div) {
+            let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp'
+            let data = {
+                ServiceKey: 'E3EUFE1791CP9TBHQ6X6',
+                detail: 'Y',
+                title: mv.dataset.title,
+                collection: 'kmdb_new2',
+                listCount: 1
+            }
+
+            $.ajax({
+                    type: "get",
+                    url: url,
+                    data: data,
+                    success: function (res) {
+                        if(typeof res === 'string') {
+                            res = JSON.parse(res)
+                        }
+                        // console.log(res.Data[0].Result)
+                        // console.log(res)
+                        if(res.Data[0].Result == undefined || res.Data[0].Result == null) {
+                            return
+                        } else {
+                            let li = res.Data[0].Result[0]
+                            let movie = {};
+                            movie['movieCd'] = mv.dataset.id
+                            movie['title'] = mv.dataset.title
+                            movie['imgUrl'] = mv.dataset.img
+                            movie['content'] = li.plots.plot[0].plotText;
+                            movie['posters'] = li.posters.replaceAll("|", ",")
+                            movie['stlls'] = li.stlls.replaceAll("|", ",")
+                            movie['rats'] = li.rating;
+                            movie['runtime'] = li.runtime;
+                            // console.log(movie)
+                            list.push(movie);
+                        }
+                        // console.log(list)
+                    }
+                });
+        }
+        await save(list)
+
+    }
+
+    let save = (list) => {
+
     }
 
     window.onload = () => {
