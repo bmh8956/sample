@@ -48,6 +48,7 @@
     let update = async () => {
         let div = document.querySelectorAll("div.data");
         let list = [];
+        let idx = 1;
         for(let mv of div) {
             let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp'
             let data = {
@@ -62,6 +63,7 @@
                     type: "get",
                     url: url,
                     data: data,
+                    async: true,
                     success: function (res) {
                         if(typeof res === 'string') {
                             res = JSON.parse(res)
@@ -83,17 +85,35 @@
                             movie['runtime'] = li.runtime;
                             // console.log(movie)
                             list.push(movie);
+                            idx++;
+                            // console.log("div : ", div.length)
+                            // console.log("idx : ", idx)
+                            if(div.length === idx) {
+                                save(list)
+                            }
                         }
                         // console.log(list)
                     }
                 });
         }
-        await save(list)
+
+        // await save(list)
 
     }
 
     let save = (list) => {
-
+        console.log(list)
+        // console.log(JSON.stringify(list))
+        $.ajax({
+            type: "post",
+            url: "update_movie_list",
+            data: JSON.stringify(list),
+            contentType: "application/json",
+            // dataType: "dataType",
+            success: function (res) {
+                console.log(res)
+            }
+        });
     }
 
     window.onload = () => {

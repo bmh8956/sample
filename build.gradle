@@ -42,6 +42,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     implementation 'com.oracle.database.jdbc:ojdbc11'
+
+    // home
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.6.3'
+
+    //
 }
 
 tasks.named('test') {

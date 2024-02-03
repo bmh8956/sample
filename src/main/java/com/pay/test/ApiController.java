@@ -3,21 +3,23 @@ package com.pay.test;
 import com.google.gson.JsonObject;
 import com.pay.test.movie.Movie;
 import com.pay.test.movie.MovieService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 public class ApiController {
-	MovieService movieService;
+	private final MovieService movieService;
 
-	@RequestMapping("/movie01")
+    @RequestMapping("/movie01")
 	public String movie01() {
 		return "movie01";
 	}
@@ -44,18 +46,21 @@ public class ApiController {
 
 	@RequestMapping("/imgDown")
 	public String down() {
-		ReadImage.save("https://cf.lottecinema.co.kr//Media/MovieFile/MovieImg/202401/20701_103_1.jpg");
+//		ReadImage.save("https://cf.lottecinema.co.kr//Media/MovieFile/MovieImg/202401/20701_103_1.jpg");
 		return "redirect:/crw_test";
 	}
 
 	@PostMapping("/update_movie_list")
 	@ResponseBody
-	public JsonObject updateMovie(@RequestParam List<Movie> mvs) {
+	public ResponseEntity<String> updateMovie(@RequestBody List<Movie> mvs) {
 		JsonObject jo = new JsonObject();
 		for(Movie mv : mvs) {
 			movieService.create(mv);
 		}
+		jo.addProperty("msg", "success");
 
-		return jo;
+		System.out.println(jo);
+
+		return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
 	}
 }
