@@ -29,6 +29,21 @@ public class ApiController {
 		return "movie02";
 	}
 
+	@RequestMapping("/movie03")
+	public String movie03() {
+		return "movie03";
+	}
+
+	@RequestMapping("/movie04")
+	public String movie04() {
+		return "movie04";
+	}
+
+	@RequestMapping("/movie05")
+	public String movie05() {
+		return "movie05";
+	}
+
 	@RequestMapping("/crw_test")
 	public String crawling() {
 		return "crawling";

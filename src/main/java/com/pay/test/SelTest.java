@@ -1,11 +1,13 @@
 package com.pay.test;
 
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 
 import java.sql.Driver;
 import java.time.Duration;
@@ -19,46 +21,49 @@ public class SelTest {
 //	public static final String WEB_DRIVER_PATH = "C:\\chrome\\chromedriver.exe"; //드라이버 경로
 
 	public static void main(String[] args) throws InterruptedException {
-//		try {
-//			System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-
-		//크롬 설정을 담은 객체 생성
+		String movieCd = "20701";
 		WebDriverManager.edgedriver().setup();
-//		ChromeDriver driver = new ChromeDriver();
-		EdgeDriver driver = new EdgeDriver();
-		// 2. 웹 페이지 접속
-//		String baseUrl = "https://www.op.gg/summoners/kr/jugklng";
-		String baseUrl = "https://www.lottecinema.co.kr/NLCHS/Movie/List?flag=1";
-		// String searchTerm = "Java";
-		// String url = baseUrl + "/wiki/" + searchTerm;
+		String baseUrl = "https://www.lottecinema.co.kr/NLCHS/Movie/MovieDetailView?movie=" + movieCd;
 
+		EdgeOptions options = new EdgeOptions();
+		options.addArguments("--headless");
+		options.addArguments("--no-sandbox");
+		EdgeDriver driver = new EdgeDriver(options);
 		driver.get(baseUrl);
 
-		Thread.sleep(1);
-		List<WebElement> elements = driver.findElements(By.cssSelector(".screen_add_box"));
-		List<String> imgl = new ArrayList<>();
-		List<String> titlel = new ArrayList<>();
-		List<Map> list = new ArrayList<>();
+		JsonObject jo = new JsonObject();
 
+		String date = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li:first-child span.roboto", "text");
+		String runTime = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li span.time span.roboto", "text");
+		String rats = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li span.grade_txt.gr_all span.roboto", "text");
+		String content = extractText(driver.findElement(By.cssSelector(".txtarea_box.movdetailtxt")), ".txtarea", "text");
+		String gen = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:first-child span", "text");
+		String dir = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:nth-child(2) span.line_type", "text");
+		String actors = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:nth-child(3) span.line_type ", "text");
+//		List<WebElement> trailers = driver.findElements(By.cssSelector(".layerMovieTrailer .layer_contents"));
+		List<WebElement> stlls = driver.findElements(By.cssSelector(".stillcut_list .gridlist .gridlist_item"));
 
-		for(WebElement element : elements) {
-			JsonObject jo = new JsonObject();
-			String img = extractText(element, ".poster_info img", "src");
-			String title = extractText(element, ".tit_info", "text").replace(extractText(element, ".ic_grade", "text"), "");
-			imgl.add(img);
-			titlel.add(title);
-		}
-		System.out.println(imgl);
-		System.out.println(titlel);
-
-//		List<WebElement> sentence = driver.findElements(By.className("tier"));
-//		for (WebElement webElement : sentence) {
-//			System.out.println(sentence.get(0).getText());
+//		JsonArray ja_tra = new JsonArray();
+//		for(WebElement tra : trailers) {
+//			ja_tra.add(extractText(tra, "video", "src"));
 //		}
-		driver.quit();
+		JsonArray ja_stl = new JsonArray();
+		for(WebElement stl : stlls) {
+			ja_stl.add(extractText(stl, "a img", "src"));
+		}
+
+
+		jo.addProperty("date", date);
+		jo.addProperty("runTime", runTime);
+		jo.addProperty("rats", rats);
+		jo.addProperty("content", content);
+		jo.addProperty("gen", gen);
+		jo.addProperty("dir", dir);
+		jo.addProperty("actors", actors);
+//		jo.addProperty("tra", ja_tra.toString());
+		jo.addProperty("stl", ja_stl.toString());
+
+		System.out.println(jo);
 
 	}
 

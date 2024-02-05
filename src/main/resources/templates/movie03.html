@@ -48,23 +48,19 @@ total : <span id="cnt"></span>
 
     let api = () => {
         let movie = document.getElementById("data").value;
-        let page = document.getElementById("page").value;
-        let start = document.getElementById("datepicker1").value.replace(/-/g, '')
-        let end = document.getElementById("datepicker2").value.replace(/-/g, '')
+        // let page = document.getElementById("page").value;
+        // let start = document.getElementById("datepicker1").value.replace(/-/g, '')
+        // let end = document.getElementById("datepicker2").value.replace(/-/g, '')
         let img_list = [];
-        if (Number(page) < 1 || page === '') {
-            page = 1;
-        }
+        // if (Number(page) < 1 || page === '') {
+        //     page = 1;
+        // }
 
-        let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp'
+        let url = 'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json'
 
         let data = {
-            ServiceKey: 'E3EUFE1791CP9TBHQ6X6',
-            detail: 'Y',
-            title: movie,
-            collection: 'kmdb_new2',
-            releaseDts: start,
-            releaseDte: end
+            key: '403dddce8295bd4a4cd9f69a6c26946d',
+            movieCd: movie
         }
 
         $.ajax({
@@ -72,10 +68,10 @@ total : <span id="cnt"></span>
             url: url,
             data: data,
             success: function (res) {
-                console.log(JSON.parse(res))
                 if (typeof res === 'string') {
                     res = JSON.parse(res)
                 }
+                console.log(res)
                 let list = res.Data[0].Result
 
                 if (list.length > 0) {
@@ -91,39 +87,35 @@ total : <span id="cnt"></span>
                 for (let li of list) {
                     let tr2 = document.createElement('tr');
                     for (let l of Object.keys(li)) {
-                        if(l == 'stlls' && li[l] != '') {
-                            console.log(li)
-                            if (index == 0) {
-                                let th = document.createElement('th');
-                                th.textContent = l;
-                                tr1.append(th)
-                            }
-                            let td = document.createElement('td');
-                            if (typeof li[l] == 'object') {
-                                li[l] = JSON.stringify(li[l])
-                            }
-                            td.textContent = li[l];
-                            tr2.append(td);
-                            table.append(tr2);
-                            if(l == 'stlls') {
-                                if(li[l] != '') {
-                                    img_list = li[l].split("|");
-                                }
+                        if (index == 0) {
+                            let th = document.createElement('th');
+                            th.textContent = l;
+                            tr1.append(th)
+                        }
+                        let td = document.createElement('td');
+                        if (typeof li[l] == 'object') {
+                            li[l] = JSON.stringify(li[l])
+                        }
+                        td.textContent = li[l];
+                        tr2.append(td);
+                        table.append(tr2);
+                        if(l == 'stlls') {
+                            if(li[l] != '') {
+                                img_list = li[l].split("|");
                             }
                         }
                     }
                     index++;
                 }
 
-                document.querySelector(".container").append(table)
+                // document.querySelector(".container").append(table)
                 document.getElementById("cnt").textContent = res.TotalCount;
-                // console.log(img_list)
-                // for(let img of img_list) {
-                //     let tag = document.createElement("img")
-                //     let tit = document.createElement("p")
-                //     tag.src = img;
-                //     document.querySelector(".container").append(tag);
-                // }
+                console.log(img_list)
+                for(let img of img_list) {
+                    let tag = document.createElement("img")
+                    tag.src = img;
+                    document.querySelector(".container").append(tag);
+                }
             }
         });
     }

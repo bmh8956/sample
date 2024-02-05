@@ -66,8 +66,37 @@ public class Crawling {
 		}
 	}
 
-	//  이미 등록되었다면 다운로드, insert x
-	public static void crw_insert(String url, String title) {
+	public static void get_movie(String movieCd) {
+		WebDriverManager.edgedriver().setup();
+		String baseUrl = "https://www.lottecinema.co.kr/NLCHS/Movie/MovieDetailView?movie=" + movieCd;
 
+		EdgeOptions options = new EdgeOptions();
+		options.addArguments("--headless");
+		options.addArguments("--no-sandbox");
+		EdgeDriver driver = new EdgeDriver(options);
+		driver.get(baseUrl);
+
+		JsonObject jo = new JsonObject();
+
+		String date = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li:first-child span.roboto", "text");
+		String runTime = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li span.time span.roboto", "text");
+		String rats = extractText(driver.findElement(By.cssSelector(".mov_info1")), "li span.grade_txt.gr_all span.roboto", "text");
+		String content = extractText(driver.findElement(By.cssSelector(".txtarea_box.movdetailtxt")), ".txtarea", "text");
+		String gen = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:first-child span", "text");
+		String dir = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:nth-child(2) span.line_type", "text");
+		String actors = extractText(driver.findElement(By.cssSelector(".movi_tab_info1 .detail_info2")), "li:nth-child(3) span.line_type ", "text");
+		List<String> stlls = new ArrayList<>();
+		List<String> trailers = new ArrayList<>();
+
+		jo.addProperty("date", date);
+		jo.addProperty("runTime", runTime);
+		jo.addProperty("rats", rats);
+		jo.addProperty("content", content);
+		jo.addProperty("gen", gen);
+		jo.addProperty("dir", dir);
+		jo.addProperty("actors", actors);
+
+		System.out.println(jo);
 	}
+
 }
