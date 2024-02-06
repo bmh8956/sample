@@ -91,24 +91,21 @@ total : <span id="cnt"></span>
                 for (let li of list) {
                     let tr2 = document.createElement('tr');
                     for (let l of Object.keys(li)) {
-                        if(l == 'stlls' && li[l] != '') {
-                            console.log(li)
-                            if (index == 0) {
-                                let th = document.createElement('th');
-                                th.textContent = l;
-                                tr1.append(th)
-                            }
-                            let td = document.createElement('td');
-                            if (typeof li[l] == 'object') {
-                                li[l] = JSON.stringify(li[l])
-                            }
-                            td.textContent = li[l];
-                            tr2.append(td);
-                            table.append(tr2);
-                            if(l == 'stlls') {
-                                if(li[l] != '') {
-                                    img_list = li[l].split("|");
-                                }
+                        if (index == 0) {
+                            let th = document.createElement('th');
+                            th.textContent = l;
+                            tr1.append(th)
+                        }
+                        let td = document.createElement('td');
+                        if (typeof li[l] == 'object') {
+                            li[l] = JSON.stringify(li[l])
+                        }
+                        td.textContent = li[l];
+                        tr2.append(td);
+                        table.append(tr2);
+                        if(l == 'stlls') {
+                            if(li[l] != '') {
+                                img_list = li[l].split("|");
                             }
                         }
                     }
@@ -117,13 +114,13 @@ total : <span id="cnt"></span>
 
                 document.querySelector(".container").append(table)
                 document.getElementById("cnt").textContent = res.TotalCount;
-                // console.log(img_list)
-                // for(let img of img_list) {
-                //     let tag = document.createElement("img")
-                //     let tit = document.createElement("p")
-                //     tag.src = img;
-                //     document.querySelector(".container").append(tag);
-                // }
+                console.log(img_list)
+                for(let img of img_list) {
+                    let tag = document.createElement("img")
+                    let tit = document.createElement("p")
+                    tag.src = img;
+                    document.querySelector(".container").append(tag);
+                }
             }
         });
     }

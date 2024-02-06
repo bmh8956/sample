@@ -37,10 +37,14 @@
                         document.getElementById('list').append(div);
                     }
                     let btn = document.createElement('button');
+                    let btn2 = document.createElement('button');
                     btn.onclick = update;
+                    btn2.onclick = update2;
                     btn.textContent = 'update'
+                    btn2.textContent = 'update2'
                     document.getElementById('list').prepend(document.createElement('hr'));
                     document.getElementById('list').prepend(btn);
+                    document.getElementById('list').prepend(btn2);
                 }
             });
     }
@@ -103,7 +107,8 @@
 
     let save = (list) => {
         console.log(list)
-        // console.log(JSON.stringify(list))
+        console.log(list[0])
+        console.log(JSON.stringify(list))
         $.ajax({
             type: "post",
             url: "update_movie_list",
@@ -119,6 +124,58 @@
                 }
             }
         });
+    }
+
+    let update2 = () => {
+        let div = document.querySelectorAll("div.data");
+        let list = [];
+        // let idx = 0;
+        for(let d of div) {
+            let obj = {};
+            obj['movieCd'] = d.dataset.id;
+            obj['title'] = d.dataset.title;
+            obj['imgUrl'] = d.dataset.img
+            list.push(obj);
+            //
+            // idx++;
+            // if(idx === 3) {
+            //     break;
+            // }
+            //
+        }
+
+        $.ajax({
+                type: "post",
+                url: "crawling/get_details",
+                data: JSON.stringify(list),
+                contentType: "application/json",
+                // dataType: "dataType", // 서버에서 반환되는 데이터 형식
+                // processData:false, // 멀티파트폼으로 보내기위해서 설정
+                // contentType:false, // 멀티파트폼으로 보내기위해서 설정
+                // async: true, // 기본값true
+                success: function (res) {
+                    if(typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    console.log(res)
+                    // if(res.msg === 'success') {
+                    if(res.length > 0) {
+                        alert("완료!")
+                        let list = res
+                        for(let li of list) {
+                            for(let di of div) {
+                                if(di.dataset.id === li) {
+                                    di.querySelector('img').onclick = () => {
+                                        location.href = 'get_movie_details?movieCd=' + li;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+
+                    }
+                }
+            });
     }
 
     window.onload = () => {

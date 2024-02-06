@@ -1,5 +1,7 @@
 package com.pay.test;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.pay.test.movie.Movie;
 import com.pay.test.movie.MovieService;
@@ -78,4 +80,23 @@ public class ApiController {
 
 		return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
 	}
+
+	@PostMapping("/crawling/get_details")
+	@ResponseBody
+	public ResponseEntity<String> get_detail(@RequestBody List<Movie> mvs) throws InterruptedException {
+		JsonArray ja = new JsonArray();
+		Gson gson = new Gson();
+		String data = "";
+		for(Movie mv : mvs) {
+			System.out.println(mv.getMovieCd());
+			Movie movie = Crawling.get_movie(mv);
+			movieService.create(movie);
+			ja.add(mv.getMovieCd());
+		}
+//		JsonObject jo = new JsonObject();
+//		jo.addProperty("msg", "success");
+//		jo.addProperty("list", String.valueOf(ja));
+		return new ResponseEntity<>(ja.toString(), HttpStatus.OK);
+	}
+
 }
