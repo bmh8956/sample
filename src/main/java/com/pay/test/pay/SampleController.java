@@ -17,7 +17,7 @@ public class SampleController {
 	@Setter(onMethod_ = @Autowired)
 	private KakaoPay kakaopay;
 
-	@GetMapping("/")
+	@GetMapping("/kakao/req")
 	public String index() {
 		return "req";
 	}
