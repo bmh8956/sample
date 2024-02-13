@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Datepicker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <style>
+        .container {
+            margin: 0 auto;
+            width: 60%;
+            /*height: 80px;*/
+        }
+
+        .ui-datepicker-inline {
+            display: none !important;
+        }
+
+        .ui-datepicker-today {
+            border: 1px solid rgba(0, 0, 0, 0.24);
+        }
+
+        #datepicker_ {
+            white-space: nowrap; /* 공백 처리 방지 */
+            overflow-x: auto; /* 수평 스크롤 표시 */
+            overflow-y: hidden; /* 세로 스크롤 숨김 */
+            width: 100%; /* 가로 너비 설정 */
+        }
+
+        .highlighted {
+            color:red;
+        }
+
+        #datepicker_ div {
+            padding: 1%;
+            display: inline-block; /* 자식 div를 인라인 블록 요소로 표시 */
+        }
+
+        .ui-datepicker-today {
+
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="datepicker"></div>
+    <div id="datepicker_"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+    let datepicker = async () => {
+        $("#datepicker").datepicker({
+            showOtherMonths: true,
+            minDate: 0,
+            monthNames: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"], // 숫자로 된 월 이름 배열
+            // 다른 옵션들...
+            beforeShowDay: function (date) {
+                // Check if the date is Sunday (0)
+                if (date.getDay() === 0) {
+                    // Apply highlighted class to Sundays
+                    return [true, "highlighted", ""];
+                }
+                // Otherwise, return as is
+                return [true, "", ""];
+            }
+        });
+        await draw();
+    }
+
+    let draw = () => {
+        let date = document.querySelectorAll(".ui-datepicker-calendar tbody td");
+        let d = [];
+        let next = document.createElement("button")
+        let prev = document.createElement("button")
+        next.textContent = '▶'
+        prev.textContent = '◀'
+        document.getElementById("datepicker_").append(prev)
+        for(let k of date) {
+            let a = k.children[0];
+            let obj = {};
+            obj['tag'] = a.tagName;
+            obj['date'] = a.textContent;
+            obj['class'] = Array.from(k.classList);
+            let tag1 = document.createElement("div")
+            for(let c of obj['class']) {
+                tag1.classList.add(c)
+            }
+            // tag1.style.float = "left";
+            let years = document.querySelector(".ui-datepicker-year").textContent;
+            let months = document.querySelector(".ui-datepicker-month").textContent;
+            let dt = years + "-" + months + "-" + a.textContent;
+            console.log(dt)
+            let dw = new Date(dt).getDay()
+            let arr_dw = ["일", "월", "화", "수", "목", "금", "토", "일"]
+
+            tag1.innerHTML = a.textContent + "<br>" + arr_dw[dw];
+            document.getElementById("datepicker_").append(tag1)
+            // document.getElementById("datepicker_").append(tag1)
+            d.push(obj);
+        }
+        document.getElementById("datepicker_").append(next)
+        next.onclick = () => {
+            document.querySelector(".ui-datepicker-next.ui-corner-all").click();
+            document.getElementById("datepicker_").innerHTML = ''
+            draw()
+        }
+        prev.onclick = () => {
+            document.querySelector(".ui-datepicker-prev.ui-corner-all").click();
+            document.getElementById("datepicker_").innerHTML = ''
+            draw()
+        }
+    }
+
+    $(document).ready(function () {
+        datepicker();
+
+    });
+</script>
+
+</body>
+</html>
